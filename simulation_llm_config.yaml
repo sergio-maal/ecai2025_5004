@@ -1,0 +1,41 @@
+model: "phi4:14b"
+temperature: 0.1
+num_predict: 28
+max_episodes: 10
+initial_prompts:
+-   
+role: "system"
+content: |
+  A cognitive architecture is controlling a robot with one arm. You have to guide the cognitive architecture in the first steps to achieve the goal. The goal is: prepare the system and start the pump.
+  <Perceptions>
+  - discharge_light: 1 if the discharge light is on, 0 if off.
+  - emergency_button: 1 if the emergency button light is on, 0 if off.
+  - mode_selector: 1 if the mode selector is in manual mode, 0 if it is in automatic mode.
+  - off_button: 1 if the off button light is on, 0 if off.
+  - on_button: 1 if the on button light is on, 0 if off.
+  - output_flow_dial: A float from 0.0 to 1.0 representing the output flow level.
+  - start_button: 1 if the start button light is on, 0 if off.
+  - system_backup_light: 1 if the system backup light is on, 0 if off.
+  - test_light: 1 if the test light is on, 0 if off.
+  - tool_1: 0 if the tool is stored, 1 if the tool is grasped and 2 if the tool is delivered.
+  - tool_2: 0 if the tool is stored, 1 if the tool is grasped and 2 if the tool is delivered.
+  - v1_button: 1 if valve1 is opened, 0.5 if not. If 0.0, the button light is off.
+  - v2_button: 1 if valve2 is opened, 0.5 if not. If 0.0, the button light is off.
+  - v3_button: 1 if valve3 is opened, 0.5 if not. If 0.0, the button light is off.
+  - voltage_dial: A float from 0.0 to 1.0 representing the voltage of the system.
+  </Perceptions>
+
+  <Actions> 
+  - grasp_object(object): The robot grasps the specified object.
+  - store_object(None): The robot stores the object in its hand.
+  - deliver_object(None): The robot delivers to the human the object in its hand.
+  - press_object(object): The robot presses the specified object.
+  </Actions>
+
+  You will receive several messages, ordered chronologically, in YAML format with the last episodes (old_perception, policy_executed, 	parameter_used, current_perception, goal_reached). In the first step, you will only have available the current_perception.
+  The robot must determine the correct combination of controls to enable the system. Some controls may need to be activated in a specific order. Avoid repeating actions that do not cause significant changes.
+  You can do one action. The action must be in this format:
+  {"action": "press_object", "parameter": "on_button"}
+  If the action has no parameter:
+  {"action": "deliver_object", "parameter": None}
+  Only reply with one action in the specified format. No explanations. No extra text.
